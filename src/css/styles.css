@@ -1,0 +1,269 @@
+/* Paleta de Escena (los mismos colores que el mockup de Figma) */
+:root {
+  --violeta: #5B2EFF;
+  --amarillo: #FFC93C;
+  --coral: #FF4D6D;
+  --coral-oscuro: #C2185B;
+  --menta: #00C9A7;
+  --tinta: #1A1033;
+  --lavanda: #F4F0FF;
+  --blanco: #FFFFFF;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, "Segoe UI", Arial, sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+  background: var(--lavanda);
+  color: var(--tinta);
+  padding-bottom: 4.5rem; /* espacio para que la barra no tape el contenido */
+}
+
+header {
+  background: var(--violeta);
+  color: var(--blanco);
+  padding: 1rem;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+main {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+h2 {
+  font-size: 1.25rem;
+  margin: 0.5rem 0 1rem;
+}
+
+.lista-eventos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.tarjeta {
+  display: flex;
+  gap: 1rem;
+  padding: 0.5rem;
+  background: var(--blanco);
+  border-radius: 12px;
+}
+
+.tarjeta__imagen {
+  flex: 0 0 6.5rem;
+  height: 6.5rem;
+  border-radius: 8px;
+}
+.tarjeta__imagen--teatro { background: var(--coral); }
+.tarjeta__imagen--musica { background: var(--menta); }
+.tarjeta__imagen--cine   { background: var(--amarillo); }
+.tarjeta__imagen--exposicion { background: var(--violeta); }
+
+.tarjeta__texto { min-width: 0; }
+
+.tarjeta__titulo {
+  margin: 0.25rem 0 0.5rem;
+  font-size: 1.125rem;
+}
+
+.tarjeta__texto p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+@media (min-width: 700px) {
+  .lista-eventos { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 1000px) {
+  .lista-eventos { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* ---------- Accesibilidad: salto, foco, buscador y filtros ---------- */
+.salto {
+  position: absolute;
+  left: -999px;
+  top: 0.5rem;
+  background: var(--tinta);
+  color: var(--blanco);
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  z-index: 10;
+}
+
+.salto:focus {
+  left: 0.5rem;
+}
+
+:focus-visible {
+  outline: 3px solid var(--tinta);
+  outline-offset: 3px;
+}
+
+.buscador {
+  margin: 1rem 0;
+}
+
+.buscador label {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.buscador input {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.5rem 0.75rem;
+  font: inherit;
+  color: var(--tinta);
+  background: var(--blanco);
+  border: 2px solid var(--violeta);
+  border-radius: 0.5rem;
+}
+
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.chip {
+  min-height: 2.75rem;
+  min-width: 2.75rem;
+  padding: 0.5rem 1rem;
+  font: inherit;
+  color: var(--tinta);
+  background: var(--blanco);
+  border: 2px solid var(--violeta);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.chip[aria-pressed="true"] {
+  background: var(--amarillo);
+  border-color: var(--tinta);
+  font-weight: 700;
+}
+
+.filtros-extra {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.campo {
+  flex: 1 1 12rem;
+}
+
+.campo label {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.campo select {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.5rem 0.75rem;
+  font: inherit;
+  color: var(--tinta);
+  background: var(--blanco);
+  border: 2px solid var(--violeta);
+  border-radius: 0.5rem;
+}
+
+#resultados {
+  font-weight: 700;
+  margin: 0 0 1rem;
+}
+
+/* ---------- Barra inferior y vistas ---------- */
+[hidden] {
+  display: none !important;
+}
+
+.barra {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  background: var(--blanco);
+  border-top: 2px solid var(--violeta);
+}
+
+.barra a {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3.5rem;
+  color: var(--tinta);
+  text-decoration: none;
+}
+
+.barra a[aria-current="page"] {
+  font-weight: 700;
+  color: var(--violeta);
+  border-top: 4px solid var(--violeta);
+  margin-top: -2px;
+}
+
+.volver {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  color: var(--violeta);
+  font-weight: 700;
+}
+
+.detalle__imagen {
+  height: 10rem;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+}
+
+.detalle__datos p {
+  margin: 0 0 0.5rem;
+}
+
+.detalle__descripcion {
+  margin: 1rem 0;
+}
+
+.boton {
+  min-height: 2.75rem;
+  padding: 0.5rem 1.25rem;
+  font: inherit;
+  font-weight: 700;
+  color: var(--blanco);
+  background: var(--violeta);
+  border: 2px solid var(--violeta);
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.boton[aria-pressed="true"] {
+  color: var(--tinta);
+  background: var(--amarillo);
+  border-color: var(--tinta);
+}
+
+.tarjeta__titulo a {
+  color: inherit;
+}

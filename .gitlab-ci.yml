@@ -1,0 +1,163 @@
+include:
+  - template: Security/Secret-Detection.gitlab-ci.yml
+  - template: Security/SAST.gitlab-ci.yml
+
+stages:
+  - calidad
+  - pruebas
+  - imagen
+  - seguridad
+  - despliegue
+
+default:
+  image: node:24
+  cache:
+    key:
+      files:
+        - package-lock.json
+    paths:
+      - .npm/
+  before_script:
+    - npm ci --cache .npm --prefer-offline
+
+lint-html:
+  stage: calidad
+  script:
+    - npm run lint:html
+
+lint-css:
+  stage: calidad
+  script:
+    - npm run lint:css
+
+lint-js:
+  stage: calidad
+  script:
+    - npm run lint:js
+
+auditoria-dependencias:
+  stage: calidad
+  script:
+    - npm audit --omit=dev
+    - npm audit --audit-level=high
+
+hadolint:
+  stage: calidad
+  image:
+    name: hadolint/hadolint:latest-debian
+    entrypoint: [""]
+  before_script: []
+  cache: []
+  script:
+    - hadolint Dockerfile
+
+secret_detection:
+  stage: calidad
+  before_script: []
+  cache: []
+
+sast:
+  stage: calidad
+  before_script: []
+  cache: []
+
+semgrep-sast:
+  stage: calidad
+  before_script: []
+  cache: []
+
+pruebas-datos:
+  stage: pruebas
+  script:
+    - node --test tests/datos.test.js
+
+accesibilidad-axe:
+  stage: pruebas
+  script:
+    - npx playwright install --with-deps chromium
+    - node --test tests/accesibilidad.test.js
+
+comprobar-secretos:
+  stage: pruebas
+  needs: ["secret_detection"]
+  script:
+    - node scripts/comprobar-secretos.js
+
+comprobar-sast:
+  stage: pruebas
+  needs: ["semgrep-sast"]
+  script:
+    - node scripts/comprobar-informe.js
+
+construir-imagen:
+  stage: imagen
+  tags:
+    - docker
+  image: docker:cli
+  before_script: []
+  cache: []
+  script:
+    - docker build -t escena:ci .
+    - docker save escena:ci -o escena.tar
+  artifacts:
+    paths:
+      - escena.tar
+    expire_in: 1 hour
+
+trivy:
+  stage: seguridad
+  needs: ["construir-imagen"]
+  image:
+    name: aquasec/trivy:latest
+    entrypoint: [""]
+  before_script: []
+  cache: []
+  script:
+    - trivy image --input escena.tar --severity HIGH,CRITICAL --exit-code 1
+
+dockle:
+  stage: seguridad
+  needs: ["construir-imagen"]
+  image:
+    name: goodwithtech/dockle:latest
+    entrypoint: [""]
+  before_script: []
+  cache: []
+  script:
+    - dockle --input escena.tar --accept-key KEY_SHA512 --exit-code 1 --exit-level warn
+
+zap-baseline:
+  stage: seguridad
+  needs: ["construir-imagen"]
+  tags:
+    - docker
+  image: docker:cli
+  before_script: []
+  cache: []
+  script:
+    - docker load -i escena.tar
+    - docker network create zapnet-$CI_JOB_ID
+    - docker run -d --name app-$CI_JOB_ID --network zapnet-$CI_JOB_ID escena:ci
+    - sleep 5
+    - mkdir zapwrk
+    - printf '10049\tIGNORE\tcontenido estatico publico\n' > zapwrk/zap-reglas.conf
+    - docker create --name zap-$CI_JOB_ID --network zapnet-$CI_JOB_ID ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t http://app-$CI_JOB_ID:8080 -c zap-reglas.conf
+    - docker cp zapwrk zap-$CI_JOB_ID:/zap/wrk
+    - docker start -a zap-$CI_JOB_ID
+  after_script:
+    - docker rm -f zap-$CI_JOB_ID || true
+    - docker rm -f app-$CI_JOB_ID || true
+    - docker network rm zapnet-$CI_JOB_ID || true
+
+pages:
+  stage: despliegue
+  before_script: []
+  cache: []
+  script:
+    - mkdir public
+    - cp -r src/. public/
+  artifacts:
+    paths:
+      - public
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH

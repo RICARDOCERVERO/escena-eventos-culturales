@@ -1,0 +1,38 @@
+{
+  "name": "escena-eventos-culturales",
+  "version": "1.0.0",
+  "description": "To make it easy for you to get started with GitLab, here's a list of recommended next steps.",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "node --test",
+    "lint:html": "html-validate src/index.html",
+    "lint:css": "stylelint src/css/styles.css",
+    "lint:js": "eslint src/js",
+    "lint": "npm run lint:html && npm run lint:css && npm run lint:js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/RICARDOCERVERO/escena-eventos-culturales.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://gitlab.com/RICARDOCERVERO/escena-eventos-culturales/issues"
+  },
+  "homepage": "https://gitlab.com/RICARDOCERVERO/escena-eventos-culturales#readme",
+  "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.14.0",
+    "globals": "^17.14.0",
+    "html-validate": "^11.21.0",
+    "playwright": "^1.65.0",
+    "stylelint": "^18.0.0",
+    "stylelint-config-standard": "^41.0.0"
+  }
+}

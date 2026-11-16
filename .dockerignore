@@ -1,0 +1,6 @@
+.git
+node_modules
+capturas-figma
+capturas-gitlab
+tests
+*.md
